@@ -20,8 +20,8 @@ let websiteSettings = {
 };
 
 // Initialize Supabase
-const supabaseUrl = 'https://your-project-id.supabase.co'; // Ganti dengan URL project Anda
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Ganti dengan anon key Anda
+const supabaseUrl = 'https://glqcpzrbxjvihumhckpd.supabase.co'; // Ganti dengan URL project Anda
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdscWNwenJieGp2aWh1bWhja3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzM2ODAsImV4cCI6MjA3NDY0OTY4MH0.7UlhRuTULC851RVc73liWhSxmKSSK3oweqVVo1Y6PBc'; // Ganti dengan anon key Anda
 const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 // Sample data (akan digantikan dengan data dari Supabase)
