@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembelajaran Fisika</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Welcome Page -->
+    <div id="welcomePage" class="min-h-screen flex items-center justify-center p-4 gradient-blue">
+        <div class="text-center max-w-4xl mx-auto">
+            <!-- Main Logo and Title -->
+            <div class="mb-12 bounce-in">
+                <div class="gradient-green w-32 h-32 rounded-full flex items-center justify-center mx-auto mb-8 float hover-glow shadow-2xl">
+                    <span class="text-white text-6xl">⚛️</span>
+                </div>
+                <h1 class="text-6xl font-bold text-white mb-4 slide-up">Fisika Learning</h1>
+                <p class="text-white/90 text-2xl mb-2 slide-up">Sistem Pembelajaran Fisika Digital</p>
+                <p class="text-white/70 text-lg slide-up">Platform pembelajaran modern untuk guru dan siswa</p>
+            </div>
+            
+            <!-- Login Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                <!-- Teacher Login Button -->
+                <div onclick="showLoginForm('guru')" class="glass rounded-3xl p-8 hover-lift cursor-pointer border-2 border-transparent hover:border-white/30 scale-in group">
+                    <div class="text-center">
+                        <div class="gradient-orange w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 float group-hover:scale-110 transition-all duration-300">
+                            <span class="text-white text-4xl">👨‍🏫</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white mb-3">Login Guru</h3>
+                        <p class="text-white/80 text-lg mb-4">Kelola pembelajaran, materi, dan penilaian</p>
+                        <div class="status-indicator bg-white/30 text-white text-sm px-4 py-2 rounded-full inline-block font-semibold border border-white/40">
+                            Klik untuk masuk
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Student Login Button -->
+                <div onclick="showLoginForm('siswa')" class="glass rounded-3xl p-8 hover-lift cursor-pointer border-2 border-transparent hover:border-white/30 scale-in group" style="animation-delay: 0.2s">
+                    <div class="text-center">
+                        <div class="gradient-purple w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 float group-hover:scale-110 transition-all duration-300" style="animation-delay: 0.5s">
+                            <span class="text-white text-4xl">👨‍🎓</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-white mb-3">Login Siswa</h3>
+                        <p class="text-white/80 text-lg mb-4">Akses materi, absen, dan lihat nilai</p>
+                        <div class="status-indicator bg-white/30 text-white text-sm px-4 py-2 rounded-full inline-block font-semibold border border-white/40">
+                            Klik untuk masuk
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features Preview -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto fade-in" style="animation-delay: 0.5s">
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-3">📚</div>
+                    <h4 class="text-white font-semibold mb-2">Materi Digital</h4>
+                    <p class="text-white/70 text-sm">PPT, Video, Modul & Latihan</p>
+                </div>
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-3">📱</div>
+                    <h4 class="text-white font-semibold mb-2">Absen GPS</h4>
+                    <p class="text-white/70 text-sm">Sistem absensi berbasis lokasi</p>
+                </div>
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="text-4xl mb-3">📊</div>
+                    <h4 class="text-white font-semibold mb-2">Penilaian</h4>
+                    <p class="text-white/70 text-sm">Kelola nilai dan laporan</p>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="mt-16">
+                <div class="text-center">
+                    <p class="text-white/60 text-sm">© 2025 ndatyo. All rights reserved.</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Login Form Page -->
+    <div id="loginPage" class="hidden min-h-screen flex items-center justify-center p-4 gradient-blue">
+        <div class="glass rounded-3xl shadow-2xl p-8 w-full max-w-md bounce-in">
+            <!-- Back Button -->
+            <button onclick="backToWelcome()" class="mb-6 text-white/80 hover:text-white flex items-center text-sm hover:scale-105 transition-all duration-300">
+                ← Kembali ke halaman utama
+            </button>
+            
+            <div class="text-center mb-8">
+                <div class="gradient-green w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 float hover-glow">
+                    <span class="text-white text-3xl" id="loginIcon">⚛️</span>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-3 slide-up" id="loginTitle">Login</h1>
+                <p class="text-white/80 text-lg slide-up" id="loginSubtitle">Masuk ke sistem</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6 fade-in">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 bg-white border-0 rounded-xl focus:ring-2 focus:ring-white focus:outline-none text-gray-900 placeholder-gray-500" placeholder="Masukkan username" required style="background-color: white !important; border: 2px solid white !important; box-shadow: none !important;">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 bg-white border-0 rounded-xl focus:ring-2 focus:ring-white focus:outline-none text-gray-900 placeholder-gray-500" placeholder="Masukkan password" required style="background-color: white !important; border: 2px solid white !important; box-shadow: none !important;">
+                </div>
+                
+                <input type="hidden" id="userType" value="">
+                
+                <button type="submit" class="w-full bg-white text-blue-700 hover:bg-blue-50 py-4 rounded-xl hover:scale-105 transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl border-2 border-white">
+                    🚀 Masuk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div id="teacherDashboard" class="hidden">
+        <!-- Header -->
+        <header class="bg-blue-800 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center fade-in">
+                        <div class="bg-green-600 w-12 h-12 rounded-full flex items-center justify-center mr-4 float">
+                            <span class="text-white text-xl">⚛️</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Dashboard Guru</h1>
+                            <p class="text-white text-sm">Sistem Pembelajaran Fisika</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-white text-sm">Selamat datang,</p>
+                            <p class="text-white font-semibold" id="teacherName">Pak Guru</p>
+                        </div>
+                        <button onclick="logout()" class="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-300 font-medium border border-white/30">
+                            🚪 Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-blue-700 text-white border-b border-blue-600">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-2">
+                    <button onclick="showTeacherSection('materi')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        📚 Materi
+                    </button>
+                    <button onclick="showTeacherSection('kelas')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        👥 Daftar Kelas
+                    </button>
+                    <button onclick="showTeacherSection('kehadiran')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        ✅ Kehadiran
+                    </button>
+                    <button onclick="showTeacherSection('nilai')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        📊 Nilai
+                    </button>
+                    <button onclick="showTeacherSection('jurnal')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        📝 Jurnal
+                    </button>
+                    <button onclick="showTeacherSection('pengaturan')" class="teacher-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-blue-600 transition-all duration-300 font-medium text-white">
+                        ⚙️ Pengaturan
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+            <!-- Materi Section -->
+            <div id="materiSection" class="teacher-section">
+                <!-- Class Selection View -->
+                <div id="materiClassView">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Pilih Kelas untuk Materi Pembelajaran</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div onclick="showMateriByClass('X')" class="card-enhanced rounded-2xl p-8 hover-lift cursor-pointer border-2 border-transparent hover:border-blue-400 slide-up">
+                            <div class="text-center">
+                                <div class="gradient-blue w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 float">
+                                    <span class="text-white text-3xl font-bold">X</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Kelas X</h3>
+                                <p class="text-gray-600 mb-4">🔬 Fisika Dasar</p>
+                                <div class="status-indicator bg-blue-100 text-blue-800 text-sm px-4 py-2 rounded-full inline-block font-semibold" id="materiCountX">0 Materi</div>
+                            </div>
+                        </div>
+                        
+                        <div onclick="showMateriByClass('XI')" class="card-enhanced rounded-2xl p-8 hover-lift cursor-pointer border-2 border-transparent hover:border-green-400 slide-up" style="animation-delay: 0.1s">
+                            <div class="text-center">
+                                <div class="gradient-green w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 float" style="animation-delay: 0.5s">
+                                    <span class="text-white text-3xl font-bold">XI</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Kelas XI</h3>
+                                <p class="text-gray-600 mb-4">⚡ Fisika Lanjutan</p>
+                                <div class="status-indicator bg-green-100 text-green-800 text-sm px-4 py-2 rounded-full inline-block font-semibold" id="materiCountXI">0 Materi</div>
+                            </div>
+                        </div>
+                        
+                        <div onclick="showMateriByClass('XII')" class="card-enhanced rounded-2xl p-8 hover-lift cursor-pointer border-2 border-transparent hover:border-purple-400 slide-up" style="animation-delay: 0.2s">
+                            <div class="text-center">
+                                <div class="gradient-purple w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 float" style="animation-delay: 1s">
+                                    <span class="text-white text-3xl font-bold">XII</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">Kelas XII</h3>
+                                <p class="text-gray-600 mb-4">🚀 Fisika Modern</p>
+                                <div class="status-indicator bg-purple-100 text-purple-800 text-sm px-4 py-2 rounded-full inline-block font-semibold" id="materiCountXII">0 Materi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Materi Detail View -->
+                <div id="materiDetailView" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center">
+                            <button onclick="backToMateriClassView()" class="mr-4 text-blue-600 hover:text-blue-800">
+                                ← Kembali
+                            </button>
+                            <h2 class="text-2xl font-bold text-gray-900">Materi Kelas <span id="currentMateriClass"></span></h2>
+                        </div>
+                        <button onclick="showAddMateriModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                            + Tambah Materi
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="materiList">
+                        <!-- Materi cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kelas Section -->
+            <div id="kelasSection" class="teacher-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Daftar Kelas</h2>
+                    <div class="flex items-center space-x-2">
+                        <select id="kelasFilterSiswa" onchange="filterSiswaByClass()" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Semua Kelas</option>
+                        </select>
+                        <button onclick="showAddKelasModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                            + Tambah Kelas
+                        </button>
+                        <button onclick="showImportModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                            📥 Import
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NISN</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="siswaList" class="bg-white divide-y divide-gray-200">
+                                <!-- Student data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kehadiran Section -->
+            <div id="kehadiranSection" class="teacher-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Kehadiran Siswa</h2>
+                    <div class="flex space-x-2">
+                        <select id="kelasFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Pilih Kelas</option>
+                        </select>
+                        <button onclick="generateToken()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-200">
+                            🔑 Generate Token
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Token Display -->
+                <div class="gradient-purple text-white p-8 rounded-2xl mb-8 shadow-2xl bounce-in">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4 flex items-center justify-center">
+                            🔑 Token Kehadiran Aktif
+                        </h3>
+                        <div class="glass p-6 rounded-xl mb-4">
+                            <div class="token-display text-white" id="currentToken">------</div>
+                        </div>
+                        <p class="text-lg mb-4 opacity-90">⏰ Token berubah setiap 30 detik</p>
+                        <div class="flex items-center justify-center space-x-2 mb-4">
+                            <span class="text-lg">⏳ Sisa waktu: </span>
+                            <span id="tokenTimer" class="text-3xl font-bold bg-white/20 px-4 py-2 rounded-lg">30</span>
+                            <span class="text-lg"> detik</span>
+                        </div>
+                        <div class="progress-bar mx-auto" style="width: 200px;"></div>
+                    </div>
+                </div>
+
+                <!-- Attendance Controls -->
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <button onclick="markAllPresent()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                            ✅ Hadir Semua
+                        </button>
+                        <div class="flex space-x-2">
+                            <label class="text-sm text-gray-600 flex items-center">Dari:</label>
+                            <input type="date" id="startDate" class="px-3 py-2 border border-gray-300 rounded-lg">
+                            <label class="text-sm text-gray-600 flex items-center">Sampai:</label>
+                            <input type="date" id="endDate" class="px-3 py-2 border border-gray-300 rounded-lg">
+                            <select id="kelasFilterKehadiran" class="px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="">Semua Kelas</option>
+                            </select>
+                            <button onclick="filterAttendance()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                                🔍 Filter
+                            </button>
+                        </div>
+                        <button onclick="printAttendance()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                            🖨️ Print Rekap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NISN</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceList" class="bg-white divide-y divide-gray-200">
+                                <!-- Attendance data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nilai Section -->
+            <div id="nilaiSection" class="teacher-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Daftar Nilai</h2>
+                    <div class="flex space-x-2">
+                        <select id="nilaiKelasFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Pilih Kelas</option>
+                        </select>
+                        <select id="jenisNilaiFilter" class="px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="">Semua Jenis</option>
+                            <option value="UH1">UH 1</option>
+                            <option value="UH2">UH 2</option>
+                            <option value="PTS">PTS</option>
+                            <option value="PAS">PAS</option>
+                        </select>
+                        <button onclick="showUploadNilaiModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                            📤 Unggah Nilai
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NISN</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nilaiList" class="bg-white divide-y divide-gray-200">
+                                <!-- Nilai data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jurnal Section -->
+            <div id="jurnalSection" class="teacher-section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Jurnal Pembelajaran</h2>
+                    <button onclick="showAddJurnalModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                        + Tambah Jurnal
+                    </button>
+                </div>
+                
+                <div class="space-y-4" id="jurnalList">
+                    <!-- Jurnal entries will be populated here -->
+                </div>
+            </div>
+
+            <!-- Pengaturan Section -->
+            <div id="pengaturanSection" class="teacher-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Pengaturan Website</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Logo Settings -->
+                    <div class="card-enhanced rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            🎨 Pengaturan Logo
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Current Logo Preview -->
+                            <div class="text-center p-6 bg-gray-50 rounded-xl">
+                                <div class="gradient-green w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" id="logoPreview">
+                                    <span class="text-white text-3xl" id="currentLogoIcon">⚛️</span>
+                                </div>
+                                <p class="text-sm text-gray-600">Logo Saat Ini</p>
+                            </div>
+                            
+                            <!-- Logo Options -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Pilih Logo:</label>
+                                <div class="grid grid-cols-4 gap-3">
+                                    <button onclick="changeLogo('⚛️')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">⚛️</button>
+                                    <button onclick="changeLogo('🔬')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">🔬</button>
+                                    <button onclick="changeLogo('📚')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">📚</button>
+                                    <button onclick="changeLogo('🎓')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">🎓</button>
+                                    <button onclick="changeLogo('⚡')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">⚡</button>
+                                    <button onclick="changeLogo('🌟')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">🌟</button>
+                                    <button onclick="changeLogo('🚀')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">🚀</button>
+                                    <button onclick="changeLogo('💡')" class="logo-option p-3 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-all duration-300 text-2xl bg-white hover:bg-blue-50">💡</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Logo Input -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Logo Kustom (Emoji):</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="customLogoInput" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg" placeholder="Masukkan emoji (contoh: 🔥)" maxlength="2">
+                                    <button onclick="setCustomLogo()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                                        Terapkan
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Logo File -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Logo (JPG, PNG, GIF):</label>
+                                <div class="space-y-3">
+                                    <input type="file" id="logoFileInput" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" onchange="previewLogoUpload(event)">
+                                    <p class="text-xs text-gray-500">Ukuran maksimal: 2MB. Format: JPG, PNG, GIF, SVG</p>
+                                    <div id="logoUploadPreview" class="hidden">
+                                        <img id="logoPreviewImage" class="w-16 h-16 object-contain rounded-lg border" alt="Logo Preview">
+                                        <div class="mt-2 flex space-x-2">
+                                            <button onclick="applyLogoUpload()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                                                ✅ Terapkan Logo
+                                            </button>
+                                            <button onclick="cancelLogoUpload()" class="text-red-600 hover:text-red-800 text-sm">
+                                                ❌ Batal
+                                            </button>
+                                        </div>
+                                        <div id="logoAppliedPreview" class="hidden mt-2">
+                                            <button onclick="removeUploadedLogo()" class="text-red-600 hover:text-red-800 text-sm">
+                                                🗑️ Hapus Logo Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Background Settings -->
+                    <div class="card-enhanced rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            🎨 Pengaturan Background
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Current Background Preview -->
+                            <div class="text-center p-6 rounded-xl" id="backgroundPreview" style="background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);">
+                                <p class="text-white font-medium">Background Saat Ini</p>
+                            </div>
+                            
+                            <!-- Background Options -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Pilih Background:</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="changeBackground('gradient-blue')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);">
+                                        <span class="text-white text-sm font-medium">Biru Gradien</span>
+                                    </button>
+                                    <button onclick="changeBackground('gradient-green')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                                        <span class="text-white text-sm font-medium">Hijau Gradien</span>
+                                    </button>
+                                    <button onclick="changeBackground('gradient-purple')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);">
+                                        <span class="text-white text-sm font-medium">Ungu Gradien</span>
+                                    </button>
+                                    <button onclick="changeBackground('gradient-orange')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);">
+                                        <span class="text-white text-sm font-medium">Orange Gradien</span>
+                                    </button>
+                                    <button onclick="changeBackground('gradient-pink')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);">
+                                        <span class="text-white text-sm font-medium">Pink Gradien</span>
+                                    </button>
+                                    <button onclick="changeBackground('gradient-teal')" class="bg-option p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 transition-all duration-300" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+                                        <span class="text-white text-sm font-medium">Teal Gradien</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Custom Background -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Background Kustom:</label>
+                                <div class="space-y-3">
+                                    <div class="flex space-x-2">
+                                        <input type="color" id="bgColor1" class="w-12 h-10 border border-gray-300 rounded" value="#1e40af">
+                                        <input type="color" id="bgColor2" class="w-12 h-10 border border-gray-300 rounded" value="#3730a3">
+                                        <button onclick="setCustomBackground()" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                                            Terapkan Gradien Kustom
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Pilih dua warna untuk membuat gradien kustom</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Background Image -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Background (JPG, PNG):</label>
+                                <div class="space-y-3">
+                                    <input type="file" id="backgroundFileInput" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" onchange="previewBackgroundUpload(event)">
+                                    <p class="text-xs text-gray-500">Ukuran maksimal: 5MB. Format: JPG, PNG. Gambar akan otomatis disesuaikan</p>
+                                    <div id="backgroundUploadPreview" class="hidden">
+                                        <div class="w-full h-20 rounded-lg border overflow-hidden">
+                                            <img id="backgroundPreviewImage" class="w-full h-full object-cover" alt="Background Preview">
+                                        </div>
+                                        <div class="mt-2 flex space-x-2">
+                                            <button onclick="applyBackgroundUpload()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                                                ✅ Terapkan Background
+                                            </button>
+                                            <button onclick="cancelBackgroundUpload()" class="text-red-600 hover:text-red-800 text-sm">
+                                                ❌ Batal
+                                            </button>
+                                        </div>
+                                        <div id="backgroundAppliedPreview" class="hidden mt-2">
+                                            <button onclick="removeUploadedBackground()" class="text-red-600 hover:text-red-800 text-sm">
+                                                🗑️ Hapus Background Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Website Title Settings -->
+                    <div class="card-enhanced rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            📝 Pengaturan Judul Website
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Judul Utama:</label>
+                                <input type="text" id="mainTitleInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg" value="Fisika Learning" placeholder="Masukkan judul utama">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Subjudul:</label>
+                                <input type="text" id="subTitleInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg" value="Sistem Pembelajaran Fisika Digital" placeholder="Masukkan subjudul">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi:</label>
+                                <textarea id="descriptionInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg" rows="2" placeholder="Masukkan deskripsi">Platform pembelajaran modern untuk guru dan siswa</textarea>
+                            </div>
+                            
+                            <button onclick="updateWebsiteTitle()" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                💾 Simpan Perubahan Judul
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Reset Settings -->
+                    <div class="card-enhanced rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                            🔄 Reset Pengaturan
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <p class="text-gray-600">Kembalikan semua pengaturan ke default</p>
+                            
+                            <div class="space-y-2">
+                                <button onclick="resetLogo()" class="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition duration-200">
+                                    🎨 Reset Logo
+                                </button>
+                                <button onclick="resetBackground()" class="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition duration-200">
+                                    🖼️ Reset Background
+                                </button>
+                                <button onclick="resetTitle()" class="w-full bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition duration-200">
+                                    📝 Reset Judul
+                                </button>
+                                <button onclick="resetAllSettings()" class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                                    🔄 Reset Semua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-blue-900 text-white py-4 mt-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <p class="text-sm opacity-80">© 2025 ndatyo. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="hidden">
+        <!-- Header -->
+        <header class="bg-green-700 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center fade-in">
+                        <div class="bg-blue-600 w-12 h-12 rounded-full flex items-center justify-center mr-4 float">
+                            <span class="text-white text-xl">⚛️</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Dashboard Siswa</h1>
+                            <p class="text-white text-sm">Portal Pembelajaran Fisika</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <p class="text-white text-sm">Selamat datang,</p>
+                            <p class="text-white font-semibold" id="studentName">Siswa</p>
+                        </div>
+                        <button onclick="logout()" class="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-300 font-medium border border-white/30">
+                            🚪 Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-green-600 text-white border-b border-green-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-2">
+                    <button onclick="showStudentSection('materi')" class="student-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-green-500 transition-all duration-300 font-medium text-white">
+                        📚 Materi
+                    </button>
+                    <button onclick="showStudentSection('kehadiran')" class="student-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-green-500 transition-all duration-300 font-medium text-white">
+                        ✅ Absen
+                    </button>
+                    <button onclick="showStudentSection('nilai')" class="student-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-green-500 transition-all duration-300 font-medium text-white">
+                        📊 Nilai
+                    </button>
+                    <button onclick="showStudentSection('jurnal')" class="student-nav-btn nav-item py-4 px-6 rounded-t-lg hover:bg-green-500 transition-all duration-300 font-medium text-white">
+                        📝 Jurnal
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+            <!-- Student Materi Section -->
+            <div id="studentMateriSection" class="student-section">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Materi Pembelajaran</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="studentMateriList">
+                    <!-- Student materi cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Student Kehadiran Section -->
+            <div id="studentKehadiranSection" class="student-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Absen Kehadiran</h2>
+                
+                <!-- GPS Attendance Form -->
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <h3 class="text-lg font-medium mb-4">Absen dengan GPS</h3>
+                    <form id="studentAttendanceForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">NISN</label>
+                            <input type="text" id="studentNISN" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Masukkan NISN" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Token</label>
+                            <input type="text" id="attendanceToken" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Masukkan token dari guru" required>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button type="button" onclick="getLocation()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                                📍 Dapatkan Lokasi
+                            </button>
+                            <span id="locationStatus" class="text-sm text-gray-600"></span>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                            ✅ Absen Sekarang
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Student Attendance History -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-medium">Riwayat Kehadiran</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentAttendanceHistory" class="bg-white divide-y divide-gray-200">
+                                <!-- Student attendance history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Nilai Section -->
+            <div id="studentNilaiSection" class="student-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Nilai Saya</h2>
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentNilaiList" class="bg-white divide-y divide-gray-200">
+                                <!-- Student nilai will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Jurnal Section -->
+            <div id="studentJurnalSection" class="student-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Jurnal Pembelajaran</h2>
+                <div class="space-y-4" id="studentJurnalList">
+                    <!-- Student jurnal will be populated here -->
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-green-800 text-white py-4 mt-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <p class="text-sm opacity-80">© 2025 ndatyo. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Materi Modal -->
+    <div id="addMateriModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-medium mb-4">Tambah Materi Baru</h3>
+            <form id="addMateriForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul Materi</label>
+                    <input type="text" id="materiTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                    <select id="materiKelas" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="">Pilih Kelas</option>
+                        <option value="X">Kelas X</option>
+                        <option value="XI">Kelas XI</option>
+                        <option value="XII">Kelas XII</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                    <textarea id="materiDescription" class="w-full px-4 py-2 border border-gray-300 rounded-lg" rows="3"></textarea>
+                </div>
+                
+                <div class="border-t pt-4">
+                    <h4 class="text-md font-medium text-gray-700 mb-3">Link Materi</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Link PPT</label>
+                            <input type="url" id="materiPPTLink" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Link Video</label>
+                            <input type="url" id="materiVideoLink" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Link Modul</label>
+                            <input type="url" id="materiModulLink" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Link Latihan</label>
+                            <input type="url" id="materiLatihanLink" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="https://...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-2 pt-4">
+                    <button type="button" onclick="closeModal('addMateriModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Kelas Modal -->
+    <div id="addKelasModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-medium mb-4">Tambah Siswa Baru</h3>
+            <form id="addKelasForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Siswa</label>
+                    <input type="text" id="siswaName" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">NISN</label>
+                    <input type="text" id="siswaNISN" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                    <input type="text" id="siswaKelas" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Contoh: X-1, XI-2, XII-3" required>
+                    <p class="text-xs text-gray-500 mt-1">Masukkan nama kelas bebas (contoh: X-1, X-2, XI-1, XII-3)</p>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addKelasModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Jurnal Modal -->
+    <div id="addJurnalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-medium mb-4">Tambah Jurnal</h3>
+            <form id="addJurnalForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
+                    <select id="jurnalKelas" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="">Pilih Kelas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+                    <input type="date" id="jurnalDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
+                    <textarea id="jurnalNote" class="w-full px-4 py-2 border border-gray-300 rounded-lg" rows="4" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('addJurnalModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
